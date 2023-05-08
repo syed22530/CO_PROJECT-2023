@@ -19,3 +19,20 @@ opcode={
     "jgt": ["01101"],
     "je" : ["01111"],
     "hlt": ["01010"],}
+def comment(line):
+    if (line != "\n" and line.strip()[0] == "#"):
+        return True
+    return False
+def is_empty(line):
+    if not line.strip():
+        return True
+    return False
+def is_label(line):
+    if line.strip()[-1] == ':':
+        return True
+    return False
+op_code_list=["add","sub","mov","mov","ld","st","mu","di","rs","ls","xo","or","an","no","cm","jm","jl","jg","je","hl"]
+with open('input_assembly.txt', 'r') as file:
+    for line in file:
+        print(line)
+        
