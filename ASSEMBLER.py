@@ -36,6 +36,7 @@ reg5=""
 reg6=""
 reg7=""
 FLAGS=""
+op_code_list=["add","sub","mov","mov","ld","st","mul","div","rs","ls","xor","or","and","not","cmp","jmp","jlt","jgt","je","hlt"]
 location_counter=0
 instruction_counter=0
 var_counter=0
@@ -51,9 +52,17 @@ def is_label(line):
     if line.strip()[-1] == ':':
         return True
     return False
-def decimalToBinary(dec):
-    return "{0:012b}".format(int(dec))
-op_code_list=["add","sub","mov","mov","ld","st","mul","div","rs","ls","xor","or","and","not","cmp","jmp","jlt","jgt","je","hlt"]
+def decimal_to_binary(decimal):
+    return bin(decimal)[2:].zfill(7)
+def binary_to_decimal(binary):
+    return int(binary, 2)
+def check_op_code(line, op_code_list):
+    words = line.strip().split()
+    if len(words) > 0 and words[0] in op_code_list:
+        return True
+    else:
+        return False
+
 with open('input_assembly.txt', 'r') as file:
     for line in file:
         print(line)
@@ -62,5 +71,11 @@ with open('input_assembly.txt', 'r') as file:
         elif is_empty(line):
             continue
         else:
-            print("")
+            if check_op_code(line, op_code_list):
+                pass
+            else:
+                words = line.strip().split()
+                print("syntax error,",words[0],"is not defined")
+                
+            
  
