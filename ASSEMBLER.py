@@ -106,7 +106,7 @@ def check_instruction_type_A(line, op_code_list):
         else:
             print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
             sys.exit()
-def check_instruction_type_D(line, op_code_list):
+"""def check_instruction_type_D(line, op_code_list):
     words = line.strip().split()
     if words[0]=="var":
         pass
@@ -127,7 +127,7 @@ def check_instruction_type_D(line, op_code_list):
                 return True
         else:
             print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
-            sys.exit()
+            sys.exit()"""
             
 def is_valid_variable_name(line, var_name_dic):
     words = line.strip().split()
