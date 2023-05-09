@@ -106,7 +106,8 @@ def check_instruction_type_A(line, op_code_list):
         else:
             print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
             sys.exit()
-"""def check_instruction_type_D(line, op_code_list):
+            
+"""def check_instruction_type_D(line, op_code_list):   # this function  is not complete    so for now this is comment
     words = line.strip().split()
     if words[0]=="var":
         pass
