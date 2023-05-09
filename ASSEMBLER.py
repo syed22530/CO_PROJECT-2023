@@ -60,9 +60,33 @@ def decimal_to_binary(decimal):
     return bin(decimal)[2:].zfill(7)
 def binary_to_decimal(binary):
     return int(binary, 2)
+def is_label(line):
+    words = line.strip().split()
+    if words[0][-1] == ":":
+        if len(words)==1:
+            return True
+        else:
+            return False
+    else:
+        return False
+def is_hlt_last(filename):
+    with open(filename, "r") as f:
+        lines = f.readlines()
+        last_line = lines[-1].strip()
+        if last_line != "hlt":
+            print("ERROR: hlt instruction missing from last of program")
+            sys.exit()
+        for line in lines[:-1]:
+            if "hlt" in line:
+                print("ERROR: hlt instruction present in a line other than the last one")
+                sys.exit()
+        return True
+
+
+
 def check_instruction_type_A(line, op_code_list):
     words = line.strip().split()
-    if words[0]=="var":
+    if words[0]=="var" or words[0][-1]==":":
         pass
     else:
         if len(words) > 0 and words[0] in op_code_list:
@@ -82,6 +106,29 @@ def check_instruction_type_A(line, op_code_list):
         else:
             print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
             sys.exit()
+def check_instruction_type_D(line, op_code_list):
+    words = line.strip().split()
+    if words[0]=="var":
+        pass
+    else:
+        if len(words) > 0 and words[0] in op_code_list:
+            op_code = words[0]
+            if op_code in ["ld","st"]:
+                if len(words) == 4:
+                    for word in words[1:]:
+                        if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
+                            print("Syntax ERROR:"  + word+"is not a valid register name")
+                            sys.exit()
+                    return True
+                else:
+                    print("Syntax ERROR: '" + op_code + "' supports three operands, " + str(len(words)-1) + " were given")
+                    sys.exit()
+            else:
+                return True
+        else:
+            print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
+            sys.exit()
+            
 def is_valid_variable_name(line, var_name_dic):
     words = line.strip().split()
     if words[0] == "var":
@@ -108,14 +155,17 @@ def is_valid_variable_name(line, var_name_dic):
             
 with open('input_assembly.txt', 'r') as file:
     for line in file:
-        if comment_or_emptyline(line):
-            continue
-        else:
-            if is_valid_variable_name(line,var_name_dict):
+        if is_hlt_last("input_assembly.txt"):
+            if comment_or_emptyline(line):
+                continue
+            elif is_label(line):
                 pass
-            if check_instruction_type_A(line, op_code_list):
-                instruction_pointer+=1
-    
+            else:
+                if is_valid_variable_name(line,var_name_dict):
+                    pass
+                if check_instruction_type_A(line, op_code_list):
+                    instruction_pointer+=1
+        
                 
             
             
