@@ -43,6 +43,7 @@ location_counter=0
 instruction_counter=0
 var_counter=0
 instruction_pointer=0
+line_counter=1
 var_name_dict={}
 memory_address = {}
 for i in range(256):
@@ -82,11 +83,11 @@ def is_hlt_last(filename):
         lines = f.readlines()
         last_line = lines[-1].strip()
         if last_line != "hlt":
-            print("ERROR: hlt instruction missing from last of program")
+            print("ERROR:  at line ",line_counter, "hlt instruction missing from last of program")
             sys.exit()
         for line in lines[:-1]:
             if "hlt" in line:
-                print("ERROR: hlt instruction present in a line other than the last one")
+                print("ERROR:  at line ",line_counter, " hlt instruction present in a line other than the last one")
                 sys.exit()
         return True
 
@@ -100,11 +101,11 @@ def check_instruction_error(line, op_code_list):
             if len(words) == 4:
                 for word in words[1:]:
                     if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
-                        print("Syntax ERROR:"  + word+"is not a valid register name")
+                        print("Syntax ERROR:  at line ",line_counter, ""  + word+"is not a valid register name")
                         sys.exit()
                 return True
             else:
-                print("Syntax ERROR: '" + op_code + "' supports three operands, " + str(len(words)-1) + " were given")
+                print("Syntax ERROR: at line ",line_counter, " '" + op_code + "' supports three operands, " + str(len(words)-1) + " were given")
                 sys.exit()
                 
                 
@@ -114,58 +115,58 @@ def check_instruction_error(line, op_code_list):
                 if len(words) == 3:
                     for word in words[1:2]:
                         if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
-                            print("Syntax ERROR:"  + word+"is not a valid register name")
+                            print("Syntax ERROR:  at line ",line_counter, ""  + word+"is not a valid register name")
                             sys.exit()
                     for word in words[2:3]:
                         if word[0]=="$":
                             if not is_valid_number(word[1:]):
-                                print("ERROR :"  + word+"must be 7 bit binary no")
+                                print("ERROR :  at line ",line_counter, ""  + word+"must be 7 bit binary no")
                                 sys.exit() 
                         else:
-                            print("Syntax ERROR: Second operand must be $imm integer between 0 and 127 , wrong syntax or \"$\" is missing  ")
+                            print("Syntax ERROR:  at line ",line_counter, " Second operand must be $imm integer between 0 and 127 , wrong syntax or \"$\" is missing  ")
                     return True
                 else:
-                    print("Syntax ERROR: '" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
+                    print("Syntax ERROR:  at line ",line_counter, "'" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
                     sys.exit()
                     
             else: #type_B
                 if len(words) == 3:
                         for word in words[1:2]:
                             if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
-                                print("Syntax ERROR:"  + word+"is not a valid register name")
+                                print("Syntax ERROR:  at line ",line_counter, ""  + word+"is not a valid register name")
                                 sys.exit()
                         return True
                 else:
-                    print("Syntax ERROR: '" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
+                    print("Syntax ERROR:  at line ",line_counter, "'" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
                     sys.exit()
             
         elif op_code in ["ld","st"]: #type_D error checking
             if len(words) == 3:
                 for word in words[1:]:
                     if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
-                        print("Syntax ERROR:"  + word+"is not a valid register name")
+                        print("Syntax ERROR at line ",line_counter, ": "  + word+"is not a valid register name")
                         sys.exit()
                 for word in words[2:3]:
                     if word not in memory_address.keys():
-                        print("Syntax ERROR:"  + word+"is not a valid memory address")
+                        print("Syntax ERROR: at line ",line_counter, ""  + word+"is not a valid memory address")
                         sys.exit()  
                 return True
             else:
-                print("Syntax ERROR: '" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
+                print("Syntax ERROR:  at line ",line_counter, "'" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
                 sys.exit()
                 
         elif op_code in ["jmp","jlt","jgt","je"]: #type_E error checking
             if len(words) == 2:
                 for word in words[1:2]:
                     if word not in memory_address.keys():
-                        print("Syntax ERROR:"  + word+"is not a valid memory address")
+                        print("Syntax ERROR:  at line ",line_counter, ""  + word+"is not a valid memory address")
                         sys.exit()  
                 return True
             else:
-                print("Syntax ERROR: '" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
+                print("Syntax ERROR:  at line ",line_counter, " '" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
                 sys.exit() 
     else:
-        print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
+        print("Syntax ERROR:  at line ",line_counter, "Invalid instruction! ",words[0],"is not an instruction")
         sys.exit()
         
         
@@ -180,18 +181,18 @@ def is_valid_variable_name(line, var_name_dict):
             if instruction_pointer==0:
                 var_name = words[1]
                 if keyword.iskeyword(var_name):
-                    print("Error, Python keyword can not be used as var name")
+                    print("Error,  at line ",line_counter, "Python keyword can not be used as var name")
                     sys.exit()
                 if not var_name.isidentifier():
-                    print("ERROR ", words[1], "can not be a valid variable name")
+                    print("ERROR  at line ",line_counter, "", words[1], "can not be a valid variable name")
                     sys.exit()
                 var_name_dict[var_name]=[]
                 return True
             else:
-                print("ERROR, variable names should be declared in the  starting of the program")
+                print("ERROR, at line ",line_counter, " variable names should be declared in the  starting of the program")
                 sys.exit()
         else:
-            print("syntax ERROR 'var' takes only one operand as name of the var but ", str(len(words) - 1), " was given")
+            print("syntax ERROR at line ",line_counter, " 'var' takes only one operand as name of the var but ", str(len(words) - 1), " was given")
             sys.exit()
         
         
@@ -210,13 +211,12 @@ with open('input_assembly.txt', 'r') as file:
                     pass
                 elif check_instruction_error(line, op_code_list):
                     instruction_pointer+=1
+        line_counter=+1
                 
                 
         
-                
+             
             
             
-            
-                
-            
+                      
  
