@@ -208,7 +208,7 @@ with open('input_assembly.txt', 'r') as file:
                     pass
                 elif check_instruction_error(line, op_code_list):
                     instruction_pointer+=1
-        line_counter=+1
+        line_counter+=1
                 
             
                       
