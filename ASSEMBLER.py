@@ -192,8 +192,17 @@ def is_valid_variable_name(line, var_name_dict):
         else:
             print("syntax ERROR at line ",line_counter, " 'var' takes only one operand as name of the var but ", str(len(words) - 1), " was given")
             sys.exit()
-        
-        
+       
+def use_of_flag(line,op_code_list):
+    words=line.strip().split()
+    op_code=line[0]
+    if len(words==4):
+        if op_code in ["add", "sub", "mul", "xor", "or", "and"]:
+            if (words[1]=="flag"or words[2]=="flag"or words[3]=="flag"):
+                print(f"Error at line {line_counter}, not a valid register")
+    if (len(words==3)):
+        if(words[1]=="flag" or words[2]=="flag"):
+            print(f"Error at line {line_counter}, not a valid register")
         
             
 with open('input_assembly.txt', 'r') as file:
