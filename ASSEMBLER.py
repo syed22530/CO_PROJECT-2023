@@ -44,6 +44,17 @@ instruction_counter=0
 var_counter=0
 instruction_pointer=0
 var_name_dict={}
+memory_address = {}
+for i in range(256):
+    bin_str = format(i, '08b')  # Convert i to 8-bit binary string
+    memory_address[bin_str] = []
+def is_valid_number(num):
+    if num.isdigit():  # Check if input is a positive integer
+        num = int(num)
+        if 0 <= num <= 127:  # Check if integer is within range
+            return True
+    return False
+
 def comment_or_emptyline(line):
     if line.strip() == "" or line.strip()[0] == "#":
         return True
@@ -52,11 +63,8 @@ def is_empty(line):
     if not line.strip():
         return True
     return False
-def is_label(line):
-    if line.strip()[-1] == ':':
-        return True
-    return False
 def decimal_to_binary(decimal):
+    decimal=int(decimal)
     return bin(decimal)[2:].zfill(7)
 def binary_to_decimal(binary):
     return int(binary, 2)
@@ -86,42 +94,53 @@ def is_hlt_last(filename):
 
 def check_instruction_type_A(line, op_code_list):
     words = line.strip().split()
-    if words[0]=="var" or words[0][-1]==":":
-        pass
-    else:
-        if len(words) > 0 and words[0] in op_code_list:
-            op_code = words[0]
-            if op_code in ["add", "sub", "mul", "xor", "or", "and"]:
-                if len(words) == 4:
-                    for word in words[1:]:
-                        if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
-                            print("Syntax ERROR:"  + word+"is not a valid register name")
-                            sys.exit()
-                    return True
-                else:
-                    print("Syntax ERROR: '" + op_code + "' supports three operands, " + str(len(words)-1) + " were given")
-                    sys.exit()
-            else:
+    if len(words) > 0 and words[0] in op_code_list:
+        op_code = words[0]
+        if op_code in ["add", "sub", "mul", "xor", "or", "and"]:
+            if len(words) == 4:
+                for word in words[1:]:
+                    if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
+                        print("Syntax ERROR:"  + word+"is not a valid register name")
+                        sys.exit()
                 return True
+            else:
+                print("Syntax ERROR: '" + op_code + "' supports three operands, " + str(len(words)-1) + " were given")
+                sys.exit()
         else:
-            print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
-            sys.exit()
-            
-            
-def check_instruction_type_B(line,op_code_list):
-    words=line.strip().split()
-    if words[0]=="var" or words[0][-1]==":":
-        pass
+            pass
     else:
-        if len(words)>0 and words[0] in op_code_list:
-            op_code=words[0]
-            if op_code in ["mov","rs","ls"]:
-                if(len(words))==3:
-                    if words[1] not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
-                            print(f"Syntax ERROR: {words[1]} is not a valid register name")
-                            sys.exit()
-             
-"""def check_instruction_type_D(line, op_code_list):   # this function  is not complete    so for now this is comment
+        print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
+        sys.exit()
+        
+        
+def check_instruction_type_B(line, op_code_list):
+    words = line.strip().split()
+    if len(words) > 0 and words[0] in op_code_list:
+        op_code = words[0]
+        if op_code in ["mov","rs","ls"]:
+            if len(words) == 3:
+                for word in words[1:2]:
+                    if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
+                        print("Syntax ERROR:"  + word+"is not a valid register name")
+                        sys.exit()
+                for word in words[2:3]:
+                    if word[0]=="$":
+                        if not is_valid_number(word[1:]):
+                            print("ERROR :"  + word+"must be 7 bit binary no")
+                            sys.exit() 
+                    else:
+                        print("Syntax ERROR: Second operand must be $imm integer between 0 and 127 , wrong syntax or \"$\" is missing  ")
+                return True
+            else:
+                print("Syntax ERROR: '" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
+                sys.exit()
+        else:
+            pass
+    else:
+        print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
+        sys.exit()
+
+"""def check_instruction_type_D(line, op_code_list):
     words = line.strip().split()
     if words[0]=="var":
         pass
@@ -144,7 +163,7 @@ def check_instruction_type_B(line,op_code_list):
             print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
             sys.exit()"""
             
-def is_valid_variable_name(line, var_name_dic):
+def is_valid_variable_name(line, var_name_dict):
     words = line.strip().split()
     if words[0] == "var":
         if len(words) == 2:
@@ -170,6 +189,7 @@ def is_valid_variable_name(line, var_name_dic):
             
 with open('input_assembly.txt', 'r') as file:
     for line in file:
+        print(line)
         if is_hlt_last("input_assembly.txt"):
             if comment_or_emptyline(line):
                 continue
@@ -178,8 +198,11 @@ with open('input_assembly.txt', 'r') as file:
             else:
                 if is_valid_variable_name(line,var_name_dict):
                     pass
-                if check_instruction_type_A(line, op_code_list):
+                elif check_instruction_type_A(line, op_code_list):
                     instruction_pointer+=1
+                elif check_instruction_type_B(line,op_code_list):
+                    instruction_pointer+=1
+                
         
                 
             
