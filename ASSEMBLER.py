@@ -86,7 +86,7 @@ def is_hlt_last(filename):
 
 def check_instruction_type_A(line, op_code_list):
     words = line.strip().split()
-    if words[0]=="var" or words[-1]==":":
+    if words[0]=="var" or words[0][-1]==":":
         pass
     else:
         if len(words) > 0 and words[0] in op_code_list:
