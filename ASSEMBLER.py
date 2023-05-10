@@ -120,7 +120,7 @@ def check_instruction_error(line, op_code_list):
                     for word in words[2:3]:
                         if word[0]=="$":
                             if not is_valid_number(word[1:]):
-                                print("ERROR :  at line ",line_counter, ""  + word+"must be 7 bit binary no")
+                                print("ERROR :  at line ",line_counter, ""  + word+"must be integer between 0 and 127")
                                 sys.exit() 
                         else:
                             print("Syntax ERROR:  at line ",line_counter, " Second operand must be $imm integer between 0 and 127 , wrong syntax or \"$\" is missing  ")
@@ -171,9 +171,7 @@ def check_instruction_error(line, op_code_list):
         
         
    
-   
-   
-            
+         
 def is_valid_variable_name(line, var_name_dict):
     words = line.strip().split()
     if words[0] == "var":
@@ -200,7 +198,6 @@ def is_valid_variable_name(line, var_name_dict):
             
 with open('input_assembly.txt', 'r') as file:
     for line in file:
-        print(line)
         if is_hlt_last("input_assembly.txt"):
             if comment_or_emptyline(line):
                 continue
@@ -213,10 +210,6 @@ with open('input_assembly.txt', 'r') as file:
                     instruction_pointer+=1
         line_counter=+1
                 
-                
-        
-             
-            
             
                       
  
