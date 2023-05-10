@@ -91,10 +91,10 @@ def is_hlt_last(filename):
         return True
 
 
-
-def check_instruction_type_A(line, op_code_list):
+#code for error checking
+def check_instruction_error(line, op_code_list):
     words = line.strip().split()
-    if len(words) > 0 and words[0] in op_code_list:
+    if len(words) > 0 and words[0] in op_code_list:  # type_A error checking
         op_code = words[0]
         if op_code in ["add", "sub", "mul", "xor", "or", "and"]:
             if len(words) == 4:
@@ -106,62 +106,72 @@ def check_instruction_type_A(line, op_code_list):
             else:
                 print("Syntax ERROR: '" + op_code + "' supports three operands, " + str(len(words)-1) + " were given")
                 sys.exit()
-        else:
-            pass
-    else:
-        print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
-        sys.exit()
-        
-        
-def check_instruction_type_B(line, op_code_list):
-    words = line.strip().split()
-    if len(words) > 0 and words[0] in op_code_list:
-        op_code = words[0]
-        if op_code in ["mov","rs","ls"]:
+                
+                
+                
+        elif op_code in ["mov","rs","ls","div","not","cmp"]: #type_C and type_B error checking
+            if words[2]  not in  ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]: #type_C
+                if len(words) == 3:
+                    for word in words[1:2]:
+                        if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
+                            print("Syntax ERROR:"  + word+"is not a valid register name")
+                            sys.exit()
+                    for word in words[2:3]:
+                        if word[0]=="$":
+                            if not is_valid_number(word[1:]):
+                                print("ERROR :"  + word+"must be 7 bit binary no")
+                                sys.exit() 
+                        else:
+                            print("Syntax ERROR: Second operand must be $imm integer between 0 and 127 , wrong syntax or \"$\" is missing  ")
+                    return True
+                else:
+                    print("Syntax ERROR: '" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
+                    sys.exit()
+                    
+            else: #type_B
+                if len(words) == 3:
+                        for word in words[1:2]:
+                            if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
+                                print("Syntax ERROR:"  + word+"is not a valid register name")
+                                sys.exit()
+                        return True
+                else:
+                    print("Syntax ERROR: '" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
+                    sys.exit()
+            
+        elif op_code in ["ld","st"]: #type_D error checking
             if len(words) == 3:
-                for word in words[1:2]:
+                for word in words[1:]:
                     if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
                         print("Syntax ERROR:"  + word+"is not a valid register name")
                         sys.exit()
                 for word in words[2:3]:
-                    if word[0]=="$":
-                        if not is_valid_number(word[1:]):
-                            print("ERROR :"  + word+"must be 7 bit binary no")
-                            sys.exit() 
-                    else:
-                        print("Syntax ERROR: Second operand must be $imm integer between 0 and 127 , wrong syntax or \"$\" is missing  ")
+                    if word not in memory_address.keys():
+                        print("Syntax ERROR:"  + word+"is not a valid memory address")
+                        sys.exit()  
                 return True
             else:
                 print("Syntax ERROR: '" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
                 sys.exit()
-        else:
-            pass
+                
+        elif op_code in ["jmp","jlt","jgt","je"]: #type_E error checking
+            if len(words) == 2:
+                for word in words[1:2]:
+                    if word not in memory_address.keys():
+                        print("Syntax ERROR:"  + word+"is not a valid memory address")
+                        sys.exit()  
+                return True
+            else:
+                print("Syntax ERROR: '" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
+                sys.exit() 
     else:
         print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
         sys.exit()
-
-"""def check_instruction_type_D(line, op_code_list):
-    words = line.strip().split()
-    if words[0]=="var":
-        pass
-    else:
-        if len(words) > 0 and words[0] in op_code_list:
-            op_code = words[0]
-            if op_code in ["ld","st"]:
-                if len(words) == 4:
-                    for word in words[1:]:
-                        if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
-                            print("Syntax ERROR:"  + word+"is not a valid register name")
-                            sys.exit()
-                    return True
-                else:
-                    print("Syntax ERROR: '" + op_code + "' supports three operands, " + str(len(words)-1) + " were given")
-                    sys.exit()
-            else:
-                return True
-        else:
-            print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
-            sys.exit()"""
+        
+        
+   
+   
+   
             
 def is_valid_variable_name(line, var_name_dict):
     words = line.strip().split()
@@ -198,10 +208,9 @@ with open('input_assembly.txt', 'r') as file:
             else:
                 if is_valid_variable_name(line,var_name_dict):
                     pass
-                elif check_instruction_type_A(line, op_code_list):
+                elif check_instruction_error(line, op_code_list):
                     instruction_pointer+=1
-                elif check_instruction_type_B(line,op_code_list):
-                    instruction_pointer+=1
+                
                 
         
                 
