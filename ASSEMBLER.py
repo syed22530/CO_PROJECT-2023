@@ -107,6 +107,20 @@ def check_instruction_type_A(line, op_code_list):
             print("Syntax ERROR: Invalid instruction! ",words[0],"is not an instruction")
             sys.exit()
             
+            
+def check_instruction_type_B(line,op_code_list):
+    words=line.strip().split()
+    if words[0]=="var" or words[0][-1]==":":
+        pass
+    else:
+        if len(words)>0 and words[0] in op_code_list:
+            op_code=words[0]
+            if op_code in ["mov","rs","ls"]:
+                if(len(words))==3:
+                    if words[1] not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
+                            print(f"Syntax ERROR: {words[1]} is not a valid register name")
+                            sys.exit()
+             
 """def check_instruction_type_D(line, op_code_list):   # this function  is not complete    so for now this is comment
     words = line.strip().split()
     if words[0]=="var":
