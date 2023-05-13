@@ -4,8 +4,8 @@ import keyword
 opcode={
     "add": ["10000","A"],
     "sub": ["10001","A"],
-    "mov": ["10010","B"], #MoveImmediate
-    "mov": ["10011","C"], #MoveRegister
+    "mov": ["10010","B"],""" MoveImmediate"""
+    "mov": ["10011","C"], """MoveRegister"""
     "ld" : ["10100","D"],
     "st" : ["10101","D"],
     "mul": ["10110","A"],
@@ -21,7 +21,7 @@ opcode={
     "jlt": ["01100","E"],
     "jgt": ["01101","E"],
     "je" : ["01111","E"],
-    "hlt": ["01010","F"],}
+    "hlt": ["01010","F"]}
 registers={"reg0":"000",
            "reg1":"001",
            "reg2":"010",
@@ -30,14 +30,14 @@ registers={"reg0":"000",
            "reg5":"101",
            "reg6":"110",
            "FLAGS":"111"}
-reg0=""
-reg1=""
-reg2=""
-reg3=""
-reg4=""
-reg5=""
-reg6=""
-FLAGS=""
+reg0="0000000000000000"
+reg1="0000000000000000"
+reg2="0000000000000000"
+reg3="0000000000000000"
+reg4="0000000000000000"
+reg5="0000000000000000"
+reg6="0000000000000000"
+FLAGS="0000000000000000"
 op_code_list=["add","sub","mov","mov","ld","st","mul","div","rs","ls","xor","or","and","not","cmp","jmp","jlt","jgt","je","hlt"]
 location_counter=0
 instruction_counter=0
@@ -45,6 +45,7 @@ var_counter=0
 instruction_pointer=0
 line_counter=1
 var_name_dict={}
+assembly_code=[]
 memory_address = {}
 for i in range(256):
     bin_str = format(i, '08b')  # Convert i to 8-bit binary string
@@ -100,12 +101,15 @@ def check_instruction_error(line, op_code_list):
         if op_code in ["add", "sub", "mul", "xor", "or", "and"]:
             if len(words) == 4:
                 for word in words[1:]:
-                    if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
+                    if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6","FLAGS"]:
                         print("Syntax ERROR:  at line ",line_counter, ""  + word+"is not a valid register name")
+                        sys.exit()
+                    if word=="FLAGS":
+                        print("ERROR:at line",line_counter,",  illegal use of FLAGS  register")
                         sys.exit()
                 return True
             else:
-                print("Syntax ERROR: at line ",line_counter, " '" + op_code + "' supports three operands, " + str(len(words)-1) + " were given")
+                print("Syntax ERROR: at line",line_counter, +   op_code + "' supports three operands, " + str(len(words)-1) + " were given")
                 sys.exit()
                 
                 
@@ -114,8 +118,11 @@ def check_instruction_error(line, op_code_list):
             if words[2]  not in  ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]: #type_C
                 if len(words) == 3:
                     for word in words[1:2]:
-                        if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
+                        if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6","FLAGS"]:
                             print("Syntax ERROR:  at line ",line_counter, ""  + word+"is not a valid register name")
+                            sys.exit()
+                        if word=="FLAGS":
+                            print("ERROR:at line",line_counter,",  illegal use of FLAGS  register")
                             sys.exit()
                     for word in words[2:3]:
                         if word[0]=="$":
@@ -131,9 +138,25 @@ def check_instruction_error(line, op_code_list):
                     
             else: #type_B
                 if len(words) == 3:
+                    if words[0]=="mov":
                         for word in words[1:2]:
-                            if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
+                            if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6","FLAGS"]:
                                 print("Syntax ERROR:  at line ",line_counter, ""  + word+"is not a valid register name")
+                                sys.exit()
+                            if word=="FLAGS":
+                                print("ERROR:at line",line_counter,",  illegal use of FLAGS  register")
+                                sys.exit()
+                        for word in words[2:]:
+                            if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6","FLAGS"]:
+                                print("Syntax ERROR:  at line ",line_counter, ""  + word+"is not a valid register name")
+                                sys.exit()
+                    else:
+                        for word in words[1:]:
+                            if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6","FLAGS"]:
+                                print("Syntax ERROR:  at line ",line_counter, ""  + word+"is not a valid register name")
+                                sys.exit()
+                            if word=="FLAGS":
+                                print("ERROR:at line",line_counter,",  illegal use of FLAGS  register")
                                 sys.exit()
                         return True
                 else:
@@ -142,9 +165,12 @@ def check_instruction_error(line, op_code_list):
             
         elif op_code in ["ld","st"]: #type_D error checking
             if len(words) == 3:
-                for word in words[1:]:
-                    if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6"]:
+                for word in words[1:2]:
+                    if word not in ["reg0", "reg1", "reg2", "reg3", "reg4", "reg5", "reg6","FLAGS"]:
                         print("Syntax ERROR at line ",line_counter, ": "  + word+"is not a valid register name")
+                        sys.exit()
+                    if word=="FLAGS":
+                        print("ERROR:at line",line_counter,",  illegal use of FLAGS  register")
                         sys.exit()
                 for word in words[2:3]:
                     if word not in memory_address.keys():
@@ -192,17 +218,8 @@ def is_valid_variable_name(line, var_name_dict):
         else:
             print("syntax ERROR at line ",line_counter, " 'var' takes only one operand as name of the var but ", str(len(words) - 1), " was given")
             sys.exit()
-       
-def use_of_flag(line,op_code_list):
-    words=line.strip().split()
-    op_code=line[0]
-    if len(words==4):
-        if op_code in ["add", "sub", "mul", "xor", "or", "and"]:
-            if (words[1]=="flag"or words[2]=="flag"or words[3]=="flag"):
-                print(f"Error at line {line_counter}, not a valid register")
-    if (len(words==3)):
-        if(words[1]=="flag" or words[2]=="flag"):
-            print(f"Error at line {line_counter}, not a valid register")
+        
+        
         
             
 with open('input_assembly.txt', 'r') as file:
@@ -218,7 +235,6 @@ with open('input_assembly.txt', 'r') as file:
                 elif check_instruction_error(line, op_code_list):
                     instruction_pointer+=1
         line_counter+=1
-                
-            
-                      
- 
+        assembly_code.append(line.strip().split()) 
+for i in assembly_code:
+        print(opcode[i[0]])                         
