@@ -527,7 +527,7 @@ with open("output_assembler_binary.txt","w") as file:
         file.write("\n")
     
 
-with open("output.assembler_with_memory_address.txt","w") as file:
+with open("output_assembler_with_memory_address.txt","w") as file:
     file.write("____________________memory_address of instructions along with instruction____________")
     file.write("\n")
     count = 0
