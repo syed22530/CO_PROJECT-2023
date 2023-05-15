@@ -1,4 +1,4 @@
-
+################################################################################################################ sujal(2022512)
 import sys
 import keyword
 # opcode_={"instruction name":["binary of opcode instruction","Type of instruction"]}
@@ -86,7 +86,7 @@ def is_hlt_last(input):
 def is_hlt_only_in_last(input):
     for i in range(len(input)-1):
         if input[i][0]=="hlt":
-            print("ERROR:  at line no. ",i+1, " hlt instruction present in a line other than the last one")
+            print("ERROR:  at line no. ",i+1, " can't execute after hlt, hlt instruction present in a line other than the last one")
             sys.exit()
     return True  
     
@@ -122,7 +122,7 @@ def is_var(input):
                 sys.exit()
         var_name_list.append(input[i][1])
     return True 
-    
+################################################################################################################################# sahil  
 label_name_list=[]
 def is_label(input):
     for i in range(len(input)):
@@ -152,10 +152,10 @@ def is_valid_syntax(input):
                 for word in words[1:]:
                     
                     if word not in ["R0", "R1", "R2", "R3", "R4", "R5", "R6","FLAGS"]:
-                        print("Syntax ERROR:  at line no. ",i+1, ""  + word+" is not a valid Rister name")
+                        print("Syntax ERROR:  at line no. ",i+1, ""  + word+" is not a valid register name")
                         sys.exit()
                     if word=="FLAGS":
-                        print("ERROR:at line no.",i+1,",  illegal use of FLAGS  Rister")
+                        print("ERROR:at line no.",i+1,",  illegal use of FLAGS  register")
                         sys.exit()
                 
             else:
@@ -169,10 +169,10 @@ def is_valid_syntax(input):
                 if len(words) == 3:
                     for word in words[1:2]:
                         if word not in ["R0", "R1", "R2", "R3", "R4", "R5", "R6","FLAGS"]:
-                            print("Syntax ERROR:  at line no. ",i+1, ""  + word+"is not a valid Rister name")
+                            print("Syntax ERROR:  at line no. ",i+1, ""  + word+"is not a valid register name")
                             sys.exit()
                         if word=="FLAGS":
-                            print("ERROR:at line no.",i+1,",  illegal use of FLAGS  Rister")
+                            print("ERROR:at line no.",i+1,",  illegal use of FLAGS  register")
                             sys.exit()
                     for word in words[2:3]:
                         if word[0]=="$":
@@ -180,8 +180,8 @@ def is_valid_syntax(input):
                                 print("ERROR :  at line no. ",i+1, ""  + word+"must be integer between 0 and 127")
                                 sys.exit() 
                         else:
-                            print("Syntax ERROR:  at line no. ",i+1, " Second operand must be $imm integer between 0 and 127 , out of range value or \"$\" is missing  ")
-                    
+                            print("Syntax ERROR:  at line no. ",i+1, " \"$\" is missing or  , out of range value,Second operand must be $imm integer between 0 and 127 ")
+                            sys.exit()
                 else:
                     print("Syntax ERROR:  at line no. ",i+1, "'" + op_code + "' supports 2 operands, " + str(len(words)-1) + " were given")
                     sys.exit()
@@ -191,22 +191,22 @@ def is_valid_syntax(input):
                     if words[0]=="mov":
                         for word in words[1:2]:
                             if word not in ["R0", "R1", "R2", "R3", "R4", "R5", "R6","FLAGS"]:
-                                print("Syntax ERROR:  at line no. ",i+1, ""  + word+"is not a valid Rister name")
+                                print("Syntax ERROR:  at line no. ",i+1, ""  + word+"is not a valid register name")
                                 sys.exit()
                             if word=="FLAGS":
-                                print("ERROR:at line no.",i+1,",  illegal use of FLAGS  Rister")
+                                print("ERROR:at line no.",i+1,",  illegal use of FLAGS  register")
                                 sys.exit()
                         for word in words[2:]:
                             if word not in ["R0", "R1", "R2", "R3", "R4", "R5", "R6","FLAGS"]:
-                                print("Syntax ERROR:  at line no. ",i+1, ""  + word+"is not a valid Rister name")
+                                print("Syntax ERROR:  at line no. ",i+1, ""  + word+"is not a valid register name")
                                 sys.exit()
                     else:
                         for word in words[1:]:
                             if word not in ["R0", "R1", "R2", "R3", "R4", "R5", "R6","FLAGS"]:
-                                print("Syntax ERROR:  at line no. ",i+1, ""  + word+"is not a valid Rister name")
+                                print("Syntax ERROR:  at line no. ",i+1, ""  + word+"is not a valid register name")
                                 sys.exit()
                             if word=="FLAGS":
-                                print("ERROR:at line no.",i+1,",  illegal use of FLAGS  Rister")
+                                print("ERROR:at line no.",i+1,",  illegal use of FLAGS  register")
                                 sys.exit()
                         
                 else:
@@ -217,10 +217,10 @@ def is_valid_syntax(input):
             if len(words) == 3:
                 for word in words[1:2]:
                     if word not in ["R0", "R1", "R2", "R3", "R4", "R5", "R6","FLAGS"]:
-                        print("Syntax ERROR at line no. ",i+1, ": "  + word+"is not a valid Rister name")
+                        print("Syntax ERROR at line no. ",i+1, ": "  + word+"is not a valid register name")
                         sys.exit()
                     if word=="FLAGS":
-                        print("ERROR:at line no.",i+1,",  illegal use of FLAGS  Rister")
+                        print("ERROR:at line no.",i+1,",  illegal use of FLAGS  register")
                         sys.exit()
                 for word in words[2:3]:
                     if  word in var_name_list:
@@ -266,7 +266,7 @@ def is_valid_syntax(input):
             sys.exit()
     return True
         
-     
+ ################################################################################################################## UDBHAV 
 input = []
 with open('input_assembly.txt', 'r') as file:
     for line in file:
@@ -279,9 +279,9 @@ with open('input_assembly.txt', 'r') as file:
             input.append(words)
             
 
-if is_hlt_last(input):
-    pass
 if is_hlt_only_in_last(input):
+    pass
+if is_hlt_last(input):
     pass
 if is_var_above(input):
     pass
@@ -320,6 +320,9 @@ for i in input:
         total_instruction+=1
                      
 machine_code=[]  
+for i in range(len(input)):
+    if input[i][0][-1]==":":
+        input[i].remove(input[i][0])
 memory_address_pointer=0    
 for i in input:
     
@@ -398,7 +401,7 @@ for i in input:
             Risters[i[2][1]]="0000000000000000"
             j=decimal_to_binary_7(memory_address_pointer)
             memory_address[j]=m
-            
+     ##########################################################################################################Syed Yasser       
     ## Type B
     elif i[0]=="rs":
         m="00010"+"0"+Risters[i[1]][0]+decimal_to_binary_7((i[2][1:]))
@@ -432,7 +435,7 @@ for i in input:
         j=decimal_to_binary_7(memory_address_pointer)
         j=decimal_to_binary_7(memory_address_pointer)
         memory_address[j]=m
-        
+       
     elif i[0]=="not":
         m=opcode[i[0]]+"00000"+Risters[i[1]][0]+Risters[i[2]][0]
         machine_code.append(m)
